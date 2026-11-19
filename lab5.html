@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лабораторна робота № 5. Електромагнітна індукція</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&family=Unbounded:wght@600;800&display=swap">
+<style>
+:root{--bg:#e6e2ff;--paper:#fff;--ink:#14112b;--mute:#5d5880;--acc:#3d3bff;--pink:#ff4f9a;--sun:#ffd23f;--mint:#2fd9a0;--soft:#f3f1ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120f26;--paper:#1e1940;--ink:#f4f1ff;--mute:#a9a3d0;--acc:#8c8bff;--soft:#2a2456}}
+:root[data-theme="dark"]{--bg:#120f26;--paper:#1e1940;--ink:#f4f1ff;--mute:#a9a3d0;--acc:#8c8bff;--soft:#2a2456}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Onest,system-ui,"Segoe UI",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:12px 12px 32px}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+#sheet{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:16px}
+.hd,.info{grid-column:1/-1}
+.hd{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+h1{font:800 1.35rem/1.15 Unbounded,Onest,sans-serif;margin:0}
+h1 small{display:block;font:500 .8rem Onest,sans-serif;color:var(--mute);margin-top:4px}
+.who{display:flex;flex-wrap:wrap;gap:8px}
+.who label{display:block;font-size:.72rem;font-weight:700;color:var(--mute)}
+.who input{width:140px;padding:7px 9px;border:2.5px solid var(--ink);border-radius:10px;background:var(--paper)}
+.who input[readonly]{width:105px;background:var(--sun);color:#14112b;font-weight:700}
+.who input.bad{border-color:var(--pink);box-shadow:0 0 0 3px var(--pink)}
+.who #cl{width:80px}
+.info{border:2.5px solid var(--ink);border-radius:12px;background:var(--soft);padding:8px 12px}
+.info summary{cursor:pointer;font-weight:700}
+.info p,.info ol{margin:.4em 0}.info ol{padding-left:1.2em}
+.warn{background:var(--sun);color:#14112b;border-radius:8px;padding:6px 10px;margin:6px 0}
+#lab{border:3px solid var(--ink);border-radius:16px;background:var(--soft);padding:10px;align-self:start}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chips button,.ctl button{padding:6px 10px;border:2.5px solid var(--ink);border-radius:999px;background:var(--paper);cursor:pointer;font-size:.82rem;font-weight:600}
+.chips button.on{background:var(--acc);color:#fff}
+.ctl{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;align-items:center}
+.ctl .go{background:var(--mint);color:#14112b}
+.ctl button:active,.chips button:active{transform:translate(2px,2px)}
+#lab canvas{display:block;width:100%;height:auto;border:2.5px solid var(--ink);border-radius:12px;background:#f7f6ff}
+#sc{cursor:grab;touch-action:none}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px}
+#ga{flex:0 0 52%;max-width:52%}
+.rd{flex:1;font-size:.84rem;line-height:1.4;color:var(--ink)}
+.rd .big{font:800 2rem/1 Unbounded,sans-serif;color:var(--acc)}
+#tip{margin:8px 0 0;font-size:.83rem;background:var(--paper);border:2px dashed var(--ink);border-radius:10px;padding:6px 9px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.nav button{padding:8px 14px;border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);font-weight:700;cursor:pointer}
+.nav button.on{background:var(--pink);color:#14112b;box-shadow:3px 3px 0 var(--ink)}
+.nav span{margin-left:auto;font-weight:700;font-size:.85rem}
+.ph{font:800 1rem Unbounded,sans-serif;margin:0 0 6px}
+.tp>p{margin:4px 0 8px;font-size:.9rem}
+table{width:100%;border-collapse:separate;border-spacing:0;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;margin-bottom:10px}
+th{background:var(--ink);color:var(--paper);font-size:.78rem;padding:6px 8px;text-align:left}
+td{padding:6px 8px;border-top:2px solid var(--soft);vertical-align:middle}
+tr.sel td{background:var(--soft)}
+tbody tr{cursor:pointer}
+td:first-child{width:30px;font-weight:800;text-align:center}
+td.ar{white-space:nowrap;text-align:right}
+.ar button{width:38px;height:34px;margin-left:3px;border:2.5px solid var(--ink);border-radius:9px;background:var(--paper);font-size:1.05rem;font-weight:800;cursor:pointer}
+.ar button.on[data-v=L]{background:var(--pink)}.ar button.on[data-v=R]{background:var(--acc);color:#fff}.ar button.on[data-v=Z]{background:var(--sun);color:#14112b}
+td input[type=number]{width:78px;padding:5px 7px;border:2.5px solid var(--ink);border-radius:9px;background:var(--paper)}
+.pick{margin-left:4px;padding:5px 8px;border:2.5px solid var(--ink);border-radius:9px;background:var(--mint);color:#14112b;font-weight:700;cursor:pointer;font-size:.78rem}
+.q{margin:8px 0;padding:10px;border:2.5px solid var(--ink);border-radius:12px;break-inside:avoid}
+.qt{margin:0 0 6px;font-size:.9rem}
+.tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.tabs button{padding:5px 11px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font-size:.82rem;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#fff}
+.tabs button.has:after{content:" ✓"}
+textarea{width:100%;padding:8px;border:2.5px solid var(--ink);border-radius:10px;background:var(--paper);resize:vertical;min-height:64px}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.tools button{padding:4px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);cursor:pointer;font-size:.8rem}
+.tools .c{width:24px;height:24px;padding:0;border-radius:50%}
+.tools .on{box-shadow:0 0 0 3px var(--acc)}
+.q canvas{display:block;width:100%;height:auto;background:#fff;border:2.5px solid var(--ink);border-radius:10px;touch-action:none;cursor:crosshair}
+.drop{display:block;padding:18px;text-align:center;border:3px dashed var(--ink);border-radius:12px;cursor:pointer;color:var(--mute)}
+.pv img{max-width:100%;border-radius:10px;border:2.5px solid var(--ink);display:block;margin-bottom:6px}
+.pv button{padding:4px 12px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);cursor:pointer}
+.txt{white-space:pre-wrap;word-break:break-word}
+.noans{color:var(--mute);font-style:italic}
+.act{margin-top:16px;padding:16px;background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);text-align:center}
+.prog{height:12px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;margin:6px auto 12px;max-width:380px}
+.prog i{display:block;height:100%;width:0;background:var(--mint);transition:width .3s}
+.btn{padding:13px 26px;border:3px solid var(--ink);border-radius:14px;background:var(--acc);color:#fff;font:800 1rem Unbounded,Onest,sans-serif;cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn:disabled{opacity:.6}
+.alt{display:inline-block;margin-top:10px;color:var(--acc);font-weight:700}
+#msg{margin:10px 0 0;min-height:1.3em;font-weight:600}
+@media (min-width:960px){#sheet{grid-template-columns:440px minmax(0,1fr);padding:20px}#lab{position:sticky;top:calc(12px + env(safe-area-inset-top,0px))}}
+</style>
+</head>
+<body>
+<main>
+<div id="sheet">
+  <header class="hd">
+    <h1>⚡ Лабораторна № 5<small>Дослідження явища електромагнітної індукції</small></h1>
+    <div class="who">
+      <div><label for="dt">Дата</label><input id="dt" readonly></div>
+      <div><label for="sn">Прізвище</label><input id="sn" type="text" autocomplete="family-name"></div>
+      <div><label for="nm">Ім’я</label><input id="nm" type="text" autocomplete="given-name"></div>
+      <div><label for="cl">Клас</label><input id="cl" type="text" placeholder="9-А"></div>
+    </div>
+  </header>
+
+  <details class="info">
+    <summary>Мета, обладнання, підготовка</summary>
+    <p><b>Мета:</b> дослідити, за яких умов у замкненій котушці виникає індукційний струм; з’ясувати, як змінюються його напрямок і величина залежно від напрямку руху магніту, розташування його полюсів, швидкості руху та індукції магнітного поля.</p>
+    <p><b>Обладнання:</b> котушка-моток на каркасі; міліамперметр (або чутливий гальванометр); два постійні магніти; маркер.</p>
+    <ol><li>Складіть електричне коло, з’єднавши котушку з міліамперметром.</li><li>Переконайтеся, що стрілка стоїть на нулі (за потреби відкалібруйте прилад).</li><li>На одному з торців котушки поставте маркером мітку.</li></ol>
+    <div class="warn"><b>Зверніть увагу!</b> Магніт вводьте та виводьте тільки з боку мітки, щоб коректно відстежувати зміну напрямку струму. Дотримуйтесь правил безпеки.</div>
+  </details>
+
+  <section id="lab">
+    <div class="chips" id="chips"><button data-k="one" class="on">1 магніт</button><button data-k="dbl">2 магніти разом</button><button data-k="cr">2 магніти з боків</button></div>
+    <canvas id="sc" width="600" height="200"></canvas>
+    <div class="row"><canvas id="ga" width="260" height="150"></canvas>
+      <div class="rd"><span class="big" id="big">0</span><br><b id="dir">не відхиляється</b><br>I = <b id="ci">0.0</b> мА<br>макс.: <b id="pk">0.0</b> мА</div></div>
+    <div class="ctl"><button class="go" data-a="in" data-v="380">Наблизити ⚡</button><button class="go" data-a="in" data-v="95">Наблизити 🐢</button><button class="go" data-a="out" data-v="380">Віддалити ⚡</button><button class="go" data-a="out" data-v="95">Віддалити 🐢</button></div>
+    <div class="ctl"><span id="flips"></span><button id="rs">↺ Скинути</button><button id="rp">Скинути макс.</button></div>
+    <p id="tip">Перетягуй магніт або котушку мишею чи пальцем. Червона мітка — торець, з якого вводять магніт. Обери рядок таблиці — стенд налаштується сам.</p>
+  </section>
+
+  <div id="work"></div>
+</div>
+
+<div class="act">
+  <div id="cnt"></div>
+  <div class="prog"><i id="bar"></i></div>
+  <button class="btn" id="pdf">Завантажити PDF</button>
+  <p id="msg" role="status"></p>
+  <p style="margin:4px 0 0;font-size:.85rem">Далі в Google Classroom: «Додати або створити» → «Файл» → обери збережений PDF.</p>
+  <a class="alt" href="https://classroom.google.com" target="_blank" rel="noopener">Відкрити Google Classroom</a>
+</div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+var AR='<td class="ar"><button type="button" data-v="L" aria-label="ліворуч">←</button><button type="button" data-v="Z" aria-label="не відхиляється">0</button><button type="button" data-v="R" aria-label="праворуч">→</button></td>';
+var NUM='<td><input type="number" step="0.1" min="0" inputmode="decimal" placeholder="мА"><button type="button" class="pick nopdf" title="Взяти максимальне відхилення з приладу">⤓ з приладу</button></td>';
+// preset: [режим, орієнтація магніту, позиція, що рухаємо, орієнтація 2-го]
+var T1=[["Вводимо магніт у котушку північним (N) полюсом",["one",1,"s","m"]],["Залишаємо магніт у котушці нерухомим",["one",1,"c","m"]],["Виводимо магніт із котушки",["one",1,"c","m"]],["Вводимо магніт у котушку південним (S) полюсом",["one",-1,"s","m"]],["Залишаємо магніт у котушці нерухомим",["one",-1,"c","m"]],["Виводимо магніт із котушки",["one",-1,"c","m"]],["Наближаємо котушку до південного полюса (S) магніту",["one",1,"s","c"]],["Наближаємо котушку до північного полюса (N) магніту",["one",-1,"s","c"]]];
+var T2=[["Швидко вводимо один магніт у котушку",["one",1,"s","m"]],["Повільно вводимо один магніт у котушку",["one",1,"s","m"]],["Швидко вводимо два магніти, складені однойменними полюсами",["dbl",1,"s","m"]],["Повільно вводимо два магніти, складені однойменними полюсами",["dbl",1,"s","m"]]];
+var T3=[["Однойменні полюси (N і N)",["cr",1,"s","m",-1]],["Різнойменні полюси (N і S)",["cr",1,"s","m",1]]];
+function tbl(h,rows,cell,fix){return '<table><thead><tr><th>№</th><th>Дії з магнітом і котушкою</th><th style="text-align:right">'+h+'</th></tr></thead><tbody>'+rows.map(function(r,i){return '<tr data-pre=\''+JSON.stringify(r[1])+'\' data-t="'+(i+1)+'. '+r[0]+'"><td>'+(i+1)+'</td><td>'+r[0]+'</td>'+cell+'</tr>'}).join('')+'</tbody></table>'}
+var n=0;
+function W(t,d){n++;return '<div class="q"><p class="qt"><b>'+t+'</b> '+d+'</p><div class="tabs"><button type="button" class="on" data-m="t">⌨ Текст</button><button type="button" data-m="d">✏ Малюнок</button><button type="button" data-m="p">📷 Фото</button></div>'+
+'<div class="pane" data-p="t"><textarea rows="3" placeholder="Введіть відповідь…"></textarea></div>'+
+'<div class="pane" data-p="d" hidden><div class="tools"><button type="button" class="c on" data-col="#111" style="background:#111"></button><button type="button" class="c" data-col="#3d3bff" style="background:#3d3bff"></button><button type="button" class="c" data-col="#e0245e" style="background:#e0245e"></button><button type="button" data-col="#fff">Гумка</button><button type="button" data-clr>Очистити</button></div><canvas width="900" height="320"></canvas></div>'+
+'<div class="pane" data-p="p" hidden><label class="drop"><input type="file" accept="image/*" hidden>Натисни, щоб завантажити скрін або фото зошита</label><div class="pv" hidden><img alt="Фото"><button type="button" data-rm>Видалити фото</button></div></div></div>'}
+var P=[
+ ['Експ. 1: напрямок струму','Дослідження умов виникнення індукційного струму та чинників, від яких залежить його напрямок. Обери рядок — стенд підготується; стеж за стрілкою приладу й познач її поведінку: ← ліворуч, 0 не відхиляється, → праворуч.',tbl('Стрілка',T1,AR),W('Висновок 1.','Проаналізуйте таблицю 1 і зазначте: 1) за яких умов у замкненій котушці виникає індукційний струм; 2) як змінюється його напрямок у разі зміни напряму руху магніту; 3) як змінюється напрямок у разі зміни полюса магніту, який наближається; 4) чи має значення, що саме рухається: магніт чи котушка.')],
+ ['Експ. 2: сила струму','Дослідження чинників, від яких залежить значення індукційного струму. Виконай дослід на стенді та заніси максимальне відхилення стрілки (кнопка «⤓ з приладу» бере його сама).',tbl('Сила струму I, мА',T2,NUM),W('Висновок 2.','Проаналізуйте таблицю 2 і зазначте: 1) як сила індукційного струму залежить від швидкості відносного руху магніту та котушки; 2) як вона залежить від індукції магнітного поля (один чи два магніти одночасно).')],
+ ['Творче завдання','Дослідіть, як змінюються покази гальванометра під час одночасного наближення до котушки двох магнітів з однаковою швидкістю від симетричних стартових ліній. Проведіть дослід спершу з однойменними, потім із різнойменними полюсами (обернути магніт можна кнопками під стендом).',tbl('Стрілка · I, мА',T3,'<td class="ar">'+AR.slice(15,-5)+NUM.slice(4,-5)+'</td>'.replace('',''),1),W('Обґрунтований висновок.','Поясніть, чому в одному випадку індукційний струм більший, а в іншому — менший або відсутній.')]
+];
+P[2][2]=tbl('Стрілка · I, мА',T3,'<td class="ar" style="white-space:normal">'+AR.slice(AR.indexOf('<button'),-5)+'<br><span style="display:inline-block;margin-top:4px">'+NUM.slice(NUM.indexOf('<input'),-5)+'</span></td>');
+var work=document.getElementById('work');
+work.innerHTML='<div class="nav nopdf" id="nav">'+P.map(function(p,i){return '<button type="button" data-i="'+i+'"'+(i?'':' class="on"')+'>'+p[0]+'</button>'}).join('')+'<span id="cnt2"></span></div>'+
+ P.map(function(p,i){return '<section class="tp"'+(i?' hidden':'')+'><h3 class="ph">'+p[0]+'</h3><p>'+p[1]+'</p>'+p[2]+p[3]+'</section>'}).join('');
+var TOTAL=n+work.querySelectorAll('td.ar').length+work.querySelectorAll('input[type=number]').length;
+document.getElementById('dt').value=new Date().toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+function ini(c){var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);c.dataset.dirty=''}
+work.querySelectorAll('.q canvas').forEach(function(c){ini(c);var x=c.getContext('2d'),on=false,col='#111';c._c=function(v){col=v};
+ function pt(e){var r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
+ c.addEventListener('pointerdown',function(e){on=true;c.setPointerCapture(e.pointerId);var p=pt(e);x.strokeStyle=col;x.lineWidth=col==='#fff'?26:3;x.lineCap=x.lineJoin='round';x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(p[0]+.1,p[1]);x.stroke();c.dataset.dirty='1';e.preventDefault()});
+ c.addEventListener('pointermove',function(e){if(!on)return;var p=pt(e);x.lineTo(p[0],p[1]);x.stroke();x.beginPath();x.moveTo(p[0],p[1])});
+ ['pointerup','pointercancel'].forEach(function(t){c.addEventListener(t,function(){on=false;upd()})})});
+function wf(q,k){var v={t:q.querySelector('textarea').value.trim()!=='',d:q.querySelector('canvas').dataset.dirty==='1',p:!q.querySelector('.pv').hidden};return k?v[k]:(v.t||v.d||v.p)}
+function upd(){var f=0;work.querySelectorAll('.q').forEach(function(q){if(wf(q))f++;q.querySelectorAll('.tabs button').forEach(function(b){b.classList.toggle('has',wf(q,b.dataset.m))})});
+ work.querySelectorAll('td.ar').forEach(function(t){if(t.querySelector('button.on'))f++});
+ work.querySelectorAll('input[type=number]').forEach(function(i){if(i.value!=='')f++});
+ var s='Виконано: '+f+' з '+TOTAL;document.getElementById('cnt').textContent=s;document.getElementById('cnt2').textContent=f+'/'+TOTAL;document.getElementById('bar').style.width=(100*f/TOTAL)+'%'}
+document.getElementById('nav').onclick=function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});work.querySelectorAll('.tp').forEach(function(p,i){p.hidden=i!=b.dataset.i})};
+work.addEventListener('click',function(e){
+ var tr=e.target.closest('tr[data-pre]'),b=e.target.closest('button'),q=e.target.closest('.q');
+ if(b&&b.dataset.v&&b.closest('.ar')){b.closest('.ar').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b&&!b.classList.contains('on'))});upd()}
+ else if(b&&b.classList.contains('pick')){var i=b.parentNode.querySelector('input');i.value=Math.abs(LAB.pk()).toFixed(1);upd()}
+ if(tr&&!(e.target.closest('input')||b&&b.classList.contains('pick'))){work.querySelectorAll('tr.sel').forEach(function(r){r.classList.remove('sel')});tr.classList.add('sel');LAB.set(JSON.parse(tr.dataset.pre),tr.dataset.t)}
+ if(!q)return;
+ if(e.target.closest('[data-rm]')){var pv=q.querySelector('.pv');pv.hidden=true;pv.querySelector('img').removeAttribute('src');q.querySelector('.drop').hidden=false;upd();return}
+ if(!b)return;
+ if(b.dataset.m){q.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});q.querySelectorAll('.pane').forEach(function(p){p.hidden=p.dataset.p!==b.dataset.m})}
+ else if(b.dataset.col){q.querySelector('canvas')._c(b.dataset.col);q.querySelectorAll('.tools button').forEach(function(x){x.classList.toggle('on',x===b)})}
+ else if('clr' in b.dataset){ini(q.querySelector('canvas'));upd()}});
+work.addEventListener('input',upd);
+work.addEventListener('change',function(e){if(e.target.type!=='file'||!e.target.files[0])return;var q=e.target.closest('.q'),img=new Image(),u=URL.createObjectURL(e.target.files[0]);
+ img.onload=function(){var k=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+  var pv=q.querySelector('.pv');pv.querySelector('img').src=c.toDataURL('image/jpeg',.85);pv.hidden=false;q.querySelector('.drop').hidden=true;URL.revokeObjectURL(u);e.target.value='';upd()};img.src=u});
+
+/* ===== Віртуальний стенд ===== */
+var LAB=(function(){
+var sc=document.getElementById('sc'),x=sc.getContext('2d'),ga=document.getElementById('ga'),g=ga.getContext('2d');
+var CY=82,CH=35,CR=40,HW=40,G=100,LIM=50,st,prev,dphi,cur,pk,auto,drag,last=0,ph=0,fl=document.getElementById('flips'),tip=document.getElementById('tip');
+function phi(){return st.m.reduce(function(s,m){var z=st.cx-m.x;return s+m.o*m.s*CR*CR/Math.pow(CR*CR+z*z,1.5)},0)}
+function sync(){prev=phi();dphi=0}
+function set(p,t){var k=p[0],mv=p[3]||'m';st={k:k,mv:mv,cx:300,m:[]};
+ if(mv==='c'){st.cx=170;st.m=[{x:430,o:p[1],s:1}]}
+ else if(k==='cr')st.m=[{x:150,o:p[1],s:1},{x:450,o:p[4]==null?-1:p[4],s:1}];
+ else st.m=[{x:p[2]==='c'?300:150,o:p[1],s:k==='dbl'?2:1}];
+ cur=0;pk=0;auto=null;sync();
+ document.querySelectorAll('#chips button').forEach(function(b){b.classList.toggle('on',b.dataset.k===k)});
+ fl.innerHTML=st.m.map(function(m,i){return '<button data-f="'+i+'">⟲ Розвернути магніт'+(st.m.length>1?' '+(i+1):'')+'</button>'}).join('');
+ if(t)tip.innerHTML='<b>Дослід '+t+'</b><br>'+(mv==='c'?'Натисни «Наблизити» або перетягни котушку до магніту.':st.m[0].x===300&&k!=='cr'?'Магніт уже в котушці: потримай його нерухомо або натисни «Віддалити».':'Натисни «Наблизити» (швидко/повільно) або тягни магніт сам.')}
+document.getElementById('chips').onclick=function(e){var k=e.target.dataset.k;if(k)set([k,1,'s','m',-1])};
+document.getElementById('rs').onclick=function(){set([st.k,st.m[0].o,'s',st.mv,st.m[1]&&st.m[1].o])};
+document.getElementById('rp').onclick=function(){pk=0};
+fl.onclick=function(e){var i=e.target.dataset.f;if(i==null)return;st.m[i].o*=-1;sync()};
+document.querySelector('#lab .ctl').onclick=function(e){var a=e.target.dataset.a;if(!a)return;var it=[];
+ if(st.mv==='c'){var f=170,t=360;st.cx=a==='in'?f:t;it.push({o:'c',to:a==='in'?t:f})}
+ else st.m.forEach(function(m,i){var sd=i?1:-1,far=st.cx+sd*150,near=st.cx+sd*(st.k==='cr'?55:0);m.x=a==='in'?far:near;it.push({o:m,to:a==='in'?near:far})});
+ auto={it:it,v:+e.target.dataset.v};sync()};
+function P(e){var r=sc.getBoundingClientRect();return[(e.clientX-r.left)*sc.width/r.width,(e.clientY-r.top)*sc.height/r.height]}
+sc.addEventListener('pointerdown',function(e){var p=P(e),h=null;auto=null;
+ st.m.forEach(function(m){if(!h&&Math.abs(p[0]-m.x)<HW&&Math.abs(p[1]-CY)<30)h=m});
+ if(!h&&Math.abs(p[0]-st.cx)<CH+6&&Math.abs(p[1]-CY)<CR+6)h='c';
+ if(h){drag={o:h,off:p[0]-(h==='c'?st.cx:h.x)};sc.setPointerCapture(e.pointerId);e.preventDefault()}});
+sc.addEventListener('pointermove',function(e){if(!drag)return;var v=Math.max(50,Math.min(550,P(e)[0]-drag.off));if(drag.o==='c')st.cx=v;else drag.o.x=v});
+['pointerup','pointercancel'].forEach(function(t){sc.addEventListener(t,function(){drag=null})});
+function mag(m){var h=m.s>1?22:28,ys=m.s>1?[CY-12,CY+12]:[CY];ys.forEach(function(y){[0,1].forEach(function(q){var N=(q===1)===(m.o>0);x.fillStyle=N?'#ff4f9a':'#3d3bff';x.fillRect(m.x-HW+q*HW,y-h/2,HW,h);x.fillStyle='#fff';x.font='800 15px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(N?'N':'S',m.x-HW/2+q*HW,y+1)});x.strokeStyle='#14112b';x.lineWidth=2.5;x.strokeRect(m.x-HW,y-h/2,2*HW,h)})}
+function wind(b){x.strokeStyle='#e8892b';x.lineWidth=4;for(var i=0;i<6;i++){x.beginPath();x.ellipse(st.cx-30+i*12,CY,7,CR-3,0,b?Math.PI/2:-Math.PI/2,b?Math.PI*1.5:Math.PI/2);x.stroke()}}
+function draw(){x.fillStyle='#f7f6ff';x.fillRect(0,0,600,200);
+ st.m.forEach(function(m){x.strokeStyle='rgba(61,59,255,.22)';x.lineWidth=2;[1,2].forEach(function(i){x.beginPath();x.ellipse(m.x,CY,HW+20*i,16+14*i,0,0,7);x.stroke()})});
+ if(st.k==='cr'){x.strokeStyle='#14112b';x.setLineDash([4,5]);x.lineWidth=1.5;[-1,1].forEach(function(s){var lx=st.cx+s*(CH+75);x.beginPath();x.moveTo(lx,22);x.lineTo(lx,150);x.stroke()});x.setLineDash([])}
+ wind(true);st.m.forEach(mag);wind(false);
+ var y0=CY+CR-3,yb=172,xa=st.cx-30,xb=st.cx+30,d=yb-y0,L=2*d+60;x.strokeStyle='#14112b';x.lineWidth=3;x.beginPath();x.moveTo(xa,y0);x.lineTo(xa,yb);x.lineTo(xb,yb);x.lineTo(xb,y0);x.stroke();
+ if(Math.abs(cur)>.4){for(var i=0;i<6;i++){var s=(((ph+i*L/6)%L)+L)%L,px,py;if(s<d){px=xa;py=y0+s}else if(s<d+60){px=xa+s-d;py=yb}else{px=xb;py=yb-(s-d-60)}x.fillStyle='#ffd23f';x.strokeStyle='#14112b';x.lineWidth=2;x.beginPath();x.arc(px,py,5,0,7);x.fill();x.stroke()}}
+ x.fillStyle='#e0245e';x.beginPath();x.arc(st.cx-CH-8,CY,7,0,7);x.fill();x.font='700 12px sans-serif';x.textAlign='center';x.fillText('мітка',st.cx-CH-8,CY-CR-6);
+ x.fillStyle='#5d5880';x.fillText('міліамперметр ↓',st.cx,194)}
+function gauge(){var cx=130,cy=138,r=112;g.fillStyle='#fff8dc';g.fillRect(0,0,260,150);g.strokeStyle='#14112b';g.fillStyle='#14112b';g.lineWidth=2;g.beginPath();g.arc(cx,cy,r,-Math.PI/2-.9,-Math.PI/2+.9);g.stroke();g.font='11px sans-serif';g.textAlign='center';g.textBaseline='middle';
+ for(var v=-50;v<=50;v+=5){var a=v/LIM*.87,s=Math.sin(a),c=Math.cos(a),M=v%25===0;g.beginPath();g.moveTo(cx+(r-(M?12:6))*s,cy-(r-(M?12:6))*c);g.lineTo(cx+r*s,cy-r*c);g.stroke();if(M)g.fillText(Math.abs(v),cx+(r-25)*s,cy-(r-25)*c)}
+ g.font='700 12px sans-serif';g.fillText('мА',cx,cy-40);var a=Math.max(-1,Math.min(1,cur/LIM))*.87;g.strokeStyle='#e0245e';g.lineWidth=3;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+(r-4)*Math.sin(a),cy-(r-4)*Math.cos(a));g.stroke();g.fillStyle='#14112b';g.beginPath();g.arc(cx,cy,6,0,7);g.fill()}
+var di=document.getElementById('dir'),ci=document.getElementById('ci'),pe=document.getElementById('pk'),bg=document.getElementById('big');
+function frame(t){var dt=Math.min(.05,(t-last)/1000||.016);last=t;
+ if(auto){var dn=true;auto.it.forEach(function(q){var c=q.o==='c'?st.cx:q.o.x,d=q.to-c,s=auto.v*dt,n=Math.abs(d)>s?c+Math.sign(d)*s:q.to;if(Math.abs(d)>s)dn=false;if(q.o==='c')st.cx=n;else q.o.x=n});if(dn)auto=null}
+ var p=phi(),r=(p-prev)/dt;prev=p;dphi+=(r-dphi)*Math.min(1,dt/.04);cur+=(-G*dphi-cur)*Math.min(1,dt/.1);ph+=cur*dt*6;
+ if(Math.abs(cur)>Math.abs(pk))pk=cur;
+ var z=Math.abs(cur)<.4;di.textContent=z?'не відхиляється':cur>0?'праворуч':'ліворуч';bg.textContent=z?'0':cur>0?'→':'←';
+ ci.textContent=(Math.abs(cur)<.05?0:cur).toFixed(1);pe.textContent=pk.toFixed(1);draw();gauge();requestAnimationFrame(frame)}
+set(["one",1,"s","m"]);requestAnimationFrame(frame);
+return{set:set,pk:function(){return pk}}})();
+upd();
+
+/* ===== PDF ===== */
+var msg=document.getElementById('msg');
+function say(t,ok){msg.textContent=t;msg.style.color=ok?'#0a8a5f':'#e0245e'}
+function prep(doc){
+ var l=doc.getElementById('lab');if(l)l.remove();doc.querySelectorAll('.nopdf').forEach(function(e){e.remove()});
+ doc.querySelectorAll('details').forEach(function(d){d.open=true});doc.querySelectorAll('.tp').forEach(function(p){p.hidden=false});
+ doc.querySelectorAll('td.ar').forEach(function(t){var b=t.querySelector('button.on'),i=t.querySelector('input'),s=[];if(b)s.push({L:'← ліворуч',Z:'0 — не відхиляється',R:'праворуч →'}[b.dataset.v]);if(i&&i.value)s.push(i.value+' мА');t.innerHTML=s.join(' · ')||'—'});
+ doc.querySelectorAll('td input[type=number]').forEach(function(i){i.closest('td').innerHTML=i.value?i.value+' мА':'—'});
+ doc.querySelectorAll('.who input').forEach(function(i){var s=doc.createElement('div');s.className='txt';s.style.fontWeight='700';s.textContent=i.value||'—';i.replaceWith(s)});
+ doc.querySelectorAll('.q').forEach(function(q){q.querySelector('.tabs').remove();var tl=q.querySelector('.tools');if(tl)tl.remove();var any=false;
+  q.querySelectorAll('.pane').forEach(function(p){var k=p.dataset.p,ok=false;
+   if(k==='t'){var t=p.querySelector('textarea');if(t.value.trim()){var s=doc.createElement('div');s.className='txt';s.textContent=t.value;t.replaceWith(s);ok=true}}
+   if(k==='d')ok=q.querySelector('canvas').dataset.dirty==='1';
+   if(k==='p'){var pv=p.querySelector('.pv');ok=!pv.hidden;if(ok){p.querySelector('.drop').remove();pv.querySelector('button').remove()}}
+   if(ok){p.hidden=false;any=true}else p.remove()});
+  if(!any){var a=doc.createElement('div');a.className='noans';a.textContent='Відповіді немає';q.appendChild(a)}})}
+document.getElementById('pdf').addEventListener('click',async function(){
+ var sn=document.getElementById('sn'),nm=document.getElementById('nm'),cl=document.getElementById('cl'),bad=false;
+ [sn,nm,cl].forEach(function(i){var e=!i.value.trim();i.classList.toggle('bad',e);bad=bad||e});
+ if(bad){say('Заповни прізвище, ім’я та клас угорі сторінки.');sn.scrollIntoView({behavior:'smooth',block:'center'});return}
+ if(!window.html2pdf){say('Бібліотеку PDF не завантажено. Оновіть сторінку.');return}
+ var btn=this,root=document.documentElement,old=root.dataset.theme;btn.disabled=true;say('Формую PDF…',true);root.dataset.theme='light';
+ try{var fn='Лабораторна_5_'+sn.value.trim()+'_'+nm.value.trim()+'.pdf';
+  var blob=await html2pdf().set({margin:[10,10,12,10],image:{type:'jpeg',quality:.9},html2canvas:{scale:1.6,useCORS:true,windowWidth:860,onclone:function(doc){doc.documentElement.dataset.theme='light';prep(doc)}},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['.q','tr','h3']}}).from(document.getElementById('sheet')).outputPdf('blob');
+  var dl=null;try{dl=window.claude&&await window.claude.use('downloads')}catch(_){}
+  if(dl){await dl.save({filename:fn,data:blob});say('Готово! PDF збережено. Прикріпи його в Google Classroom.',true)}
+  else{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();say('Готово! PDF завантажено. Прикріпи його в Google Classroom.',true)}
+ }catch(err){say(err&&err.code==='declined'?'Збереження скасовано.':'Не вдалося створити PDF. Спробуй ще раз.')}
+ finally{btn.disabled=false;if(old)root.dataset.theme=old;else root.removeAttribute('data-theme')}});
+</script>
+</body>
+</html>
